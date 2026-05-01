@@ -94,3 +94,28 @@ io.to(roomId).emit("newQuestion", {
 });
 ✔ Emit total questions
 total: room.questions.length
+
+
+
+
+
+
+
+
+
+
+
+
+FINAL SUMMARY
+Feature	Status
+Host control	✔ Done
+Leave handling	⚠ Improve
+Validation	✔ Done
+Timer	❌ Missing
+Final leaderboard	❌ Missing
+Shuffle	❌ Missing
+DB	❌ Future
+Anti-cheat	❌ Future
+Reconnect	❌ Future
+Index emit	❌ Missing
+Total questions	❌ Missing

@@ -1,29 +1,81 @@
 const rooms = {};
 
+// create room
 export const createRoom = (roomId, hostSocketId) => {
-  rooms[roomId] = {
-    host: hostSocketId,
-    players: {},
-    questions: [],
-    currentQuestionIndex: 0
-  };
+	console.log("[ROOM MANAGER] creating room:", roomId);
+
+	rooms[roomId] = {
+		host: hostSocketId,
+		players: {},
+		questions: [],
+		currentQuestionIndex: 0
+	};
 };
 
+// add player
 export const addPlayer = (roomId, socketId, name) => {
-  if (!rooms[roomId]) return;
+	const room = rooms[roomId];
 
-  rooms[roomId].players[socketId] = {
-    name,
-    score: 0
-  };
+	// check room exists
+	if (!room) return;
+
+	// prevent duplicate
+	if (room.players[socketId]) return;
+
+	console.log("[ROOM MANAGER] adding player:", name, "->", roomId);
+
+	room.players[socketId] = {
+		name,
+		score: 0,
+		answered: false
+	};
 };
 
-export const getRoom = (roomId) => {
-  return rooms[roomId];
+// remove player
+export const removePlayer = (roomId, socketId) => {
+	const room = rooms[roomId];
+	if (!room) return;
+
+	console.log("[ROOM MANAGER] removing player:", socketId, "from", roomId);
+
+	delete room.players[socketId];
 };
 
+// get room
+export const getRoom = (roomId) => rooms[roomId];
+
+// update score
 export const updateScore = (roomId, socketId, isCorrect) => {
-  if (isCorrect) {
-    rooms[roomId].players[socketId].score += 1;
-  }
+	const room = rooms[roomId];
+
+	// safety
+	if (!room || !room.players[socketId]) return;
+
+	if (isCorrect) {
+		room.players[socketId].score += 1;
+		console.log("[SCORE UPDATE]", socketId, "new score:", room.players[socketId].score);
+	}
+};
+
+// reset answers
+export const resetAnswers = (roomId) => {
+	const room = rooms[roomId];
+	if (!room) return;
+
+	console.log("[RESET ANSWERS]", roomId);
+
+	for (let id in room.players) {
+		room.players[id].answered = false;
+	}
+};
+
+// delete room if empty
+export const deleteRoomIfEmpty = (roomId) => {
+	const room = rooms[roomId];
+	if (!room) return;
+
+	if (Object.keys(room.players).length === 0) {
+		console.log("[ROOM DELETED]", roomId);
+		delete rooms[roomId];
+	}
 };
