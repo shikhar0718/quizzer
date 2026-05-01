@@ -1,0 +1,62 @@
+# ==============================
+# 📦 Dependencies (Frontend + Backend)
+# ==============================
+quiz-backend/node_modules/
+quiz-frontend/node_modules/
+
+# ==============================
+# 🔐 Environment variables
+# ==============================
+quiz-backend/.env
+quiz-frontend/.env
+.env
+.env.*
+
+# ==============================
+# 🏗 Build outputs (Frontend)
+# ==============================
+quiz-frontend/dist/
+quiz-frontend/build/
+
+# ==============================
+# ⚙️ Logs
+# ==============================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==============================
+# 💻 OS files
+# ==============================
+.DS_Store
+Thumbs.db
+
+# ==============================
+# 🧠 IDE / Editor
+# ==============================
+.vscode/
+.idea/
+
+# ==============================
+# 🧪 Testing
+# ==============================
+coverage/
+
+# ==============================
+# ⚡ Vite specific
+# ==============================
+quiz-frontend/vite.svg
+
+# ==============================
+# 🔥 Backend temp / uploads (future)
+# ==============================
+quiz-backend/uploads/
+quiz-backend/tmp/
+quiz-backend/temp/
+
+# ==============================
+# 🔒 Optional (lock files - KEEP recommended)
+# ==============================
+# quiz-backend/package-lock.json
+# quiz-frontend/package-lock.json
