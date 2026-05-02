@@ -3,26 +3,24 @@ import {
 	addPlayer,
 	getRoom,
 	removePlayer,
-	deleteRoomIfEmpty
-} from "../../rooms/roomManager.js";
+	deleteRoomIfEmpty,
+	ROOM_STATE
+} from "../../rooms/Manager.js";
 
-import {nanoid} from "nanoid";
+import { nanoid } from "nanoid";
 
-function generateRoomId(){
+function generateRoomId() {
 	return nanoid(6).toUpperCase();
 }
 
 // create room
 export const handleCreateRoom = (socket, io) => () => {
 
-	
-
 	if (socket.data.roomId)
 		return socket.emit("error", "Already in a room");
 
-	const roomId = generateRoomId();console.log("[CREATE ROOM ATTEMPT]", socket.id, roomId);
-
-
+	const roomId = generateRoomId();
+	console.log("[CREATE ROOM ATTEMPT]", socket.id, roomId);
 
 	if (getRoom(roomId))
 		return socket.emit("error", "Room already exists");
@@ -47,6 +45,11 @@ export const handleJoinRoom = (socket, io) => ({ roomId, name }) => {
 	const room = getRoom(roomId);
 
 	if (!room) return socket.emit("error", "Room not found");
+
+	// ✅ STATE CHECK
+	if (room.state !== ROOM_STATE.WAITING)
+		return socket.emit("error", "Quiz already started");
+
 	if (socket.data.roomId) return socket.emit("error", "Already in a room");
 	if (!name) return socket.emit("error", "Name required");
 
@@ -63,7 +66,7 @@ export const handleJoinRoom = (socket, io) => ({ roomId, name }) => {
 	console.log("[JOIN SUCCESS]", name, "->", roomId);
 
 	io.to(roomId).emit("playersUpdate", {
-  		players: Object.values(room.players)
+		players: Object.values(room.players)
 	});
 };
 
@@ -80,7 +83,9 @@ export const handleLeaveRoom = (socket, io) => () => {
 
 	removePlayer(roomId, socket.id);
 
-	io.to(roomId).emit("playerLeft", { players: room.players });
+	io.to(roomId).emit("playerLeft", {
+		players: Object.values(room.players)
+	});
 
 	socket.leave(roomId);
 	deleteRoomIfEmpty(roomId);
@@ -100,9 +105,21 @@ export const handleDisconnect = (socket, io) => () => {
 	const room = getRoom(roomId);
 	if (!room) return;
 
+	// ✅ HOST DISCONNECT HANDLING
+	if (room.host === socket.id) {
+		room.state = ROOM_STATE.ENDED;
+
+		io.to(roomId).emit("quizEnded", { reason: "Host left" });
+
+		deleteRoomIfEmpty(roomId);
+		return;
+	}
+
 	removePlayer(roomId, socket.id);
 
-	io.to(roomId).emit("playerLeft", { players: room.players });
+	io.to(roomId).emit("playerLeft", {
+		players: Object.values(room.players)
+	});
 
 	deleteRoomIfEmpty(roomId);
 };

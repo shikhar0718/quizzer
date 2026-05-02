@@ -1,8 +1,9 @@
 import {
 	getRoom,
 	updateScore,
-	resetAnswers
-} from "../../rooms/roomManager.js";
+	resetAnswers,
+	ROOM_STATE
+} from "../../rooms/Manager.js";
 
 // start quiz
 export const handleQuizStart = (socket, io) => ({ roomId }) => {
@@ -21,14 +22,17 @@ export const handleQuizStart = (socket, io) => ({ roomId }) => {
 	room.currentQuestionIndex = 0;
 	resetAnswers(roomId);
 
+	// ✅ STATE CHANGE
+	room.state = ROOM_STATE.RUNNING;
+
 	console.log("[QUIZ STARTED]", roomId);
 
 	io.to(roomId).emit("quizStarted");
 
 	io.to(roomId).emit("newQuestion", {
 		question: {
-			text:room.questions[0].question,
-			options:room.questions[0].options
+			text: room.questions[0].question,
+			options: room.questions[0].options
 		},
 		index: 0,
 		total: room.questions.length
@@ -44,13 +48,17 @@ export const handleNextQuestion = (socket, io) => ({ roomId }) => {
 	if (room.host !== socket.id)
 		return socket.emit("error", "Only host");
 
-	if(room.currentQuestionIndex+1>=room.questions.length){
+	if (room.currentQuestionIndex + 1 >= room.questions.length) {
 		console.log("[QUIZ ENDED]", roomId);
+
+		// ✅ STATE CHANGE
+		room.state = ROOM_STATE.ENDED;
 
 		return io.to(roomId).emit("quizEnded", {
 			players: Object.values(room.players)
 		});
 	}
+
 	room.currentQuestionIndex++;
 
 	console.log("[NEXT QUESTION]", roomId, room.currentQuestionIndex);
@@ -61,8 +69,8 @@ export const handleNextQuestion = (socket, io) => ({ roomId }) => {
 
 	io.to(roomId).emit("newQuestion", {
 		question: {
-			text:q.question,
-			options:q.options
+			text: q.question,
+			options: q.options
 		},
 		index: room.currentQuestionIndex,
 		total: room.questions.length
@@ -77,6 +85,9 @@ export const handleSubmitAnswer = (socket, io) => ({ roomId, answerIndex }) => {
 	const room = getRoom(roomId);
 	if (!room) return;
 
+	// ✅ STATE CHECK
+	if (room.state !== ROOM_STATE.RUNNING) return;
+
 	const player = room.players[socket.id];
 	if (!player || player.answered) return;
 
@@ -88,6 +99,7 @@ export const handleSubmitAnswer = (socket, io) => ({ roomId, answerIndex }) => {
 	updateScore(roomId, socket.id, answerIndex === q.correctAnswer);
 
 	const players = Object.values(room.players).sort((a, b) => b.score - a.score);
+
 	io.to(roomId).emit("leaderboard", { players });
 };
 

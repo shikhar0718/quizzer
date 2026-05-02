@@ -1,10 +1,18 @@
 const rooms = {};
 
+
+export const ROOM_STATE = {
+  WAITING: "waiting",
+  RUNNING: "running",
+  ENDED: "ended"
+};
+
 // create room
 export const createRoom = (roomId, hostSocketId) => {
 	console.log("[ROOM MANAGER] creating room:", roomId);
-
+  
 	rooms[roomId] = {
+		state:ROOM_STATE.WAITING,
 		host: hostSocketId,
 		players: {},
 		questions: [],
