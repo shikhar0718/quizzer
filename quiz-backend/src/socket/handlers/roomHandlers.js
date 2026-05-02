@@ -6,15 +6,23 @@ import {
 	deleteRoomIfEmpty
 } from "../../rooms/roomManager.js";
 
+import {nanoid} from "nanoid";
+
+function generateRoomId(){
+	return nanoid(6).toUpperCase();
+}
+
 // create room
-export const handleCreateRoom = (socket, io) => ({ roomId }) => {
+export const handleCreateRoom = (socket, io) => () => {
 
-	console.log("[CREATE ROOM ATTEMPT]", socket.id, roomId);
-
-	if (!roomId) return socket.emit("error", "please give room ID");
+	
 
 	if (socket.data.roomId)
 		return socket.emit("error", "Already in a room");
+
+	const roomId = generateRoomId();console.log("[CREATE ROOM ATTEMPT]", socket.id, roomId);
+
+
 
 	if (getRoom(roomId))
 		return socket.emit("error", "Room already exists");
@@ -54,7 +62,9 @@ export const handleJoinRoom = (socket, io) => ({ roomId, name }) => {
 
 	console.log("[JOIN SUCCESS]", name, "->", roomId);
 
-	io.to(roomId).emit("playerJoined", { players: room.players });
+	io.to(roomId).emit("playersUpdate", {
+  		players: Object.values(room.players)
+	});
 };
 
 // leave room
