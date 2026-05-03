@@ -12,11 +12,14 @@ export const createRoom = (roomId, hostSocketId) => {
 	console.log("[ROOM MANAGER] creating room:", roomId);
   
 	rooms[roomId] = {
+		createdAt:Date.now(),
+		startedAt:null,
 		state:ROOM_STATE.WAITING,
 		host: hostSocketId,
 		players: {},
 		questions: [],
 		currentQuestionIndex: 0
+
 	};
 };
 
