@@ -119,3 +119,8 @@ Anti-cheat	❌ Future
 Reconnect	❌ Future
 Index emit	❌ Missing
 Total questions	❌ Missing
+
+
+
+
+fix the docker-compose.yml

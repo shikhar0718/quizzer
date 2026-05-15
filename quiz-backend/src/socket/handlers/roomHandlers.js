@@ -46,7 +46,7 @@ export const handleJoinRoom = (socket, io) => ({ roomId, name }) => {
 
 	if (!room) return socket.emit("error", "Room not found");
 
-	// ✅ STATE CHECK
+	// STATE CHECK
 	if (room.state !== ROOM_STATE.WAITING)
 		return socket.emit("error", "Quiz already started");
 
@@ -105,7 +105,7 @@ export const handleDisconnect = (socket, io) => () => {
 	const room = getRoom(roomId);
 	if (!room) return;
 
-	// ✅ HOST DISCONNECT HANDLING
+	// HOST DISCONNECT HANDLING
 	if (room.host === socket.id) {
 		room.state = ROOM_STATE.ENDED;
 

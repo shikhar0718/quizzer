@@ -109,6 +109,11 @@ export const handleSubmitAnswer = (socket, io) => ({ roomId, answerIndex }) => {
 
 	const room = getRoom(roomId);
 	if (!room) return;
+
+	//  host can't answer
+	if(socket.id === room.host){
+		return socket.emit("error","host cannot submit answers")
+	}
 	if (room.state === ROOM_STATE.WAITING) {
 		return socket.emit("error", "Quiz hasn't started yet");
 	}
@@ -163,4 +168,27 @@ export const handleSetQuestions = (socket, io) => ({ roomId, questions }) => {
 	console.log("[QUESTIONS SET SUCCESS]", questions.length);
 
 	socket.emit("questionsSet");
+};
+
+// getting the current question 
+
+export const handleGetCurrentQuestion = (socket, io) => ({ roomId }) => {
+
+	const room = getRoom(roomId);
+
+	if (!room) return;
+	if (!room.questions.length) return;
+
+	const q = room.questions[room.currentQuestionIndex];
+
+	socket.emit("newQuestion", {
+		question: {
+			text: q.question,
+			options: q.options
+		},
+		index: room.currentQuestionIndex,
+		total: room.questions.length
+	});
+
+	emitVoteUpdate(io, roomId, room);
 };

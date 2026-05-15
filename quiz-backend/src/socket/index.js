@@ -1,5 +1,5 @@
 import { handleCreateRoom,handleJoinRoom,handleLeaveRoom,handleDisconnect } from "./handlers/roomHandlers.js";
-import { handleQuizStart,handleNextQuestion,handleSubmitAnswer,handleSetQuestions } from "./handlers/quizHandlers.js";
+import { handleQuizStart,handleNextQuestion,handleSubmitAnswer,handleSetQuestions,handleGetCurrentQuestion } from "./handlers/quizHandlers.js";
 
 const initSocket = (io) => {
 	io.on("connection", (socket) => {
@@ -20,6 +20,7 @@ const initSocket = (io) => {
 		socket.on("nextQuestion", handleNextQuestion(socket, io));
 		socket.on("submitAnswer", handleSubmitAnswer(socket, io));
 		socket.on("setQuestions", handleSetQuestions(socket, io));
+		socket.on("getCurrentQuestion",handleGetCurrentQuestion(socket, io));
 
 		socket.on("disconnect", handleDisconnect(socket, io));
 	});
