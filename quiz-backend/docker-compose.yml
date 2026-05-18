@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTFRES_PASSWORD: password 
+      POSTGRES_PASSWORD: password 
       POSTGRES_DB: quizzer
     
     ports:

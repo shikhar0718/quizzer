@@ -114,6 +114,7 @@ export const handleSubmitAnswer = (socket, io) => ({ roomId, answerIndex }) => {
 	if(socket.id === room.host){
 		return socket.emit("error","host cannot submit answers")
 	}
+	
 	if (room.state === ROOM_STATE.WAITING) {
 		return socket.emit("error", "Quiz hasn't started yet");
 	}
