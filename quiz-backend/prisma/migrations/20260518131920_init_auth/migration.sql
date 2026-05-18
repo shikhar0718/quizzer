@@ -1,0 +1,22 @@
+/*
+  Warnings:
+
+  - Added the required column `password` to the `User` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `User` table without a default value. This is not possible if the table is not empty.
+  - Made the column `name` on table `User` required. This step will fail if there are existing NULL values in that column.
+
+*/
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('TEACHER', 'ADMIN', 'USER');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "isVerified" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "password" TEXT NOT NULL,
+ADD COLUMN     "refreshToken" TEXT,
+ADD COLUMN     "resetPasswordExpires" TIMESTAMP(3),
+ADD COLUMN     "resetPasswordToken" TEXT,
+ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'TEACHER',
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
+ADD COLUMN     "verificationToken" TEXT,
+ALTER COLUMN "name" SET NOT NULL;
