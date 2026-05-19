@@ -23,8 +23,14 @@ class APIError extends Error{
         static conflict(message="Conflict"){
             return new APIError(message,409);
         }
+        
+        static forbidden(message="forbidden"){
+            return new APIError(message,403)
+        }
 
-    
+        static notFound(message="Resource not found"){
+            return new APIError(message,404);
+        }
 }
 
 export default APIError
