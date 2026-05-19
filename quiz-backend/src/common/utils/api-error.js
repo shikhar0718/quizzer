@@ -19,6 +19,10 @@ class APIError extends Error{
         static pageNotFound(message= "Page Not Found"){
             return new APIError(message,412)
         }
+        
+        static conflict(message="Conflict"){
+            return new APIError(message,409);
+        }
 
     
 }
