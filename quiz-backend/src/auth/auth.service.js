@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt"
+import crypto from "crypto";
 import prisma from "../common/db/prisma.js";
 import APIError from "../common/utils/api-error.js";
-import { generateAccessToken, generateRefreshToken, generateResetToken } from "../common/utils/jwt.utils.js";
+import { generateAccessToken, generateRefreshToken, generateResetToken, verifyRefreshToken } from "../common/utils/jwt.utils.js";
 
 //  helper function 
 const hashToken = (token) =>{
-    crypto.createHash("sha256").update(rawToken).digest("hex");
+   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
 
@@ -38,7 +39,6 @@ const register = async ({name,email,password}) =>{
             id:true,
             name:true,
             email:true,
-            password:true,
             isVerified:true,
         }
     });
@@ -76,9 +76,9 @@ const login= async ({email,password})=>{
         throw APIError.unauthorized("Invalid email id or password");
 
     }
-    if(!existingUser.isVerified){
-        throw APIError.forbidden ("Please verify your email first")
-    }
+    // if(!existingUser.isVerified){
+    //     throw APIError.forbidden ("Please verify your email first")
+    // }
 
     const accessToken = generateAccessToken({id:existingUser.id,email:existingUser.email});
     const refreshToken = generateRefreshToken({id:existingUser.id});
@@ -106,4 +106,88 @@ const login= async ({email,password})=>{
 
 };
 
-export {register,login}
+const refresh = async(token)=>{
+    if(!token){
+    
+        throw APIError.unauthorized("Refresh token missing");
+        const decoded = verifyRefreshToken(token);
+        const user = await prisma.user.findUnique(
+            {
+                where:{
+                    id:decoded.id
+                },
+                select:{
+                    id:true,
+                    name:true,
+                    email:true,
+                    refreshToken:true,
+                    isVerified:true
+
+                }
+            }
+        );
+    }
+    
+    if(!user){
+            throw APIError.notFound("User not found");
+        }
+
+        const hashedIncomingToken=hashToken(token);
+
+        if(user.refreshToken!==hashedIncomingToken){
+            throw APIError.unauthorized("Invalid refresh token");
+        }
+        
+        const accessToken=generateAccessToken({
+            id:user.id,
+            email:user.email
+        });
+        
+        const newRefreshToken=generateRefreshToken({
+            id:user.id
+        });
+
+        await prisma.user.update({
+            where:{
+                id:user.id
+            },
+            data:{
+            refreshToken:hashToken(newRefreshToken)
+        }
+    });
+
+    return{
+
+        accessToken,
+
+        refreshToken:
+        newRefreshToken
+
+    };
+}
+
+const logout = async(userId)=>{
+    await prisma.user.update({
+        where:{
+            id:userId
+        },
+        data:{
+            refreshToken:null
+        }
+    })
+}
+  
+const verification = async()=>{
+
+}
+
+const forgotPassword = async()=>{
+
+}
+
+const newPassword = async()=>{
+
+}
+
+
+export {register,login,refresh,logout,verification,forgotPassword,newPassword}

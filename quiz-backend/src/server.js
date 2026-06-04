@@ -4,14 +4,17 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import {Server} from "socket.io";
-
+import cookieParser from "cookie-parser";
 
 
 import initSocket from "./socket/index.js";
 import prisma  from "./common/db/prisma.js";
 
+import { authRouter} from '../src/auth/auth.route.js';
+
 
 const app = express();
+app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 
@@ -29,11 +32,10 @@ async function testDB() {
 
     try {
 
-        const users =
-        await prisma.user.findMany();
+
+        await prisma.$queryRaw`SELECT 1`;
 
         console.log("DB connected 🔥");
-        console.log(users);
 
     }
 
@@ -52,6 +54,7 @@ app.get("/",(req,res)=>{
     res.send("Quizzer Backend is running");
 });
 
+app.use("/", authRouter);
 server.listen(PORT,()=>{
     console.log(`Server is running on port: http://localhost:${PORT}`)
 });

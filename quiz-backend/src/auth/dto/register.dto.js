@@ -3,22 +3,22 @@ import BaseDto from "../../common/dto/base.dto.js"
 
 
 class RegisterDto extends BaseDto{
-    static schema = Joi.object(
+    static schema = joi.object(
         {
-            name:Joi
+            name:joi
             .string()
             .trim()
             .min(2)
             .max(50)
             .required(),
 
-            email:Joi.
+            email:joi.
             string().
             email().
             lowercase().
             required(),
 
-           password:Joi
+           password:joi
             .string()
             .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
             .message("password should be atleast of 8 charecters").required(),

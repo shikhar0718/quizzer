@@ -14,17 +14,29 @@ const register = async (req,res,next) =>{
     }
 };
 
-const login = async(req,res,next) =>{
+const login  = async(req,res , next)=>{
     try{
-        const user= await authService.login(req.body);
-        APIResponse.ok(res,"Login successful", user)
+        const {user,accessToken,refreshToken} = await authService.login(req.body);
 
+        res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  });
+
+  APIResponse.ok(res,"Login Successful",{user,accessToken})
     }
-
     catch(err){
         next(err);
     }
 };
 
+const refresh =async(req,res,next)=>{
 
-export {register,login} 
+}
+const logout =async(req,res,next)=>{
+
+} 
+
+
+export {register,login,refresh,logout} 

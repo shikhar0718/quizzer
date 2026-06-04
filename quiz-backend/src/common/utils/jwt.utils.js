@@ -2,7 +2,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
 const generateAccessToken=(payload)=>{
-    jwt.sign(payload,process.env.JWT_ACCESS_TOKEN_SECRET,{
+    return jwt.sign(payload,process.env.JWT_ACCESS_TOKEN_SECRET,{
         expiresIn:process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || "15m",
         algorithm:"HS512",
     })
@@ -10,7 +10,7 @@ const generateAccessToken=(payload)=>{
 }
 
 const generateRefreshToken=(payload)=>{
-    jwt.sign(payload,process.env.JWT_REFRESH_TOKEN_SECRET,{
+    return jwt.sign(payload,process.env.JWT_REFRESH_TOKEN_SECRET,{
         expiresIn:process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || "24h",
         algorithm:"HS512",
     })
