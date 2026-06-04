@@ -60,3 +60,10 @@ quiz-backend/temp/
 # ==============================
 # quiz-backend/package-lock.json
 # quiz-frontend/package-lock.json
+
+# ==============================
+# prisma
+# ==============================
+quiz-backend/src/generated/prisma
+
+/generated/prisma

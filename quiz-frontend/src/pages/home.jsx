@@ -6,8 +6,98 @@ import { motion } from "framer-motion";
 export default function Home() {
   const navigate = useNavigate();
 
+  const userData = localStorage.getItem("user");
+
+const user =
+  userData && userData !== "undefined"
+    ? JSON.parse(userData)
+    : null;
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.reload();
+  };
+
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-black via-zinc-950 to-black text-white flex flex-col items-center justify-center px-6">
+    <div className="relative min-h-screen w-full bg-linear-to-b from-black via-zinc-950 to-black text-white flex flex-col items-center justify-center px-6">
+
+      {/* TOP RIGHT SECTION */}
+      <div className="absolute top-6 right-6 flex gap-4 items-center">
+
+        {!user ? (
+          <>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.92 }}
+            >
+              <Button
+                variant="ghost"
+                size="lg"
+                className="
+                border border-zinc-800
+                hover:bg-zinc-500
+                transition-all
+                duration-300
+                hover:shadow-lg
+                hover:shadow-zinc-800
+                "
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.92 }}
+            >
+              <Button
+                variant="ghost"
+                size="lg"
+                className="
+                border border-zinc-800
+                hover:bg-zinc-500
+                transition-all
+                duration-300
+                hover:shadow-lg
+                hover:shadow-zinc-800
+                "
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </Button>
+            </motion.div>
+          </>
+        ) : (
+          <>
+            <span className="text-zinc-300 font-medium">
+              Welcome, {user.name}
+            </span>
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.92 }}
+            >
+              <Button
+                variant="ghost"
+                size="lg"
+                className="
+                border border-zinc-800
+                hover:bg-red-500
+                transition-all
+                duration-300
+                hover:shadow-lg
+                hover:shadow-red-900
+                "
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </motion.div>
+          </>
+        )}
+
+      </div>
 
       {/* HERO */}
       <div className="text-center space-y-5">
@@ -20,7 +110,7 @@ export default function Home() {
           Real-time multiplayer quiz experience
         </p>
 
-        {/* BUTTONS */}
+        {/* MAIN BUTTONS */}
         <div className="flex gap-4 justify-center pt-4">
 
           <motion.div
@@ -69,7 +159,6 @@ export default function Home() {
 
       </div>
 
-
       {/* FEATURES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 max-w-5xl w-full">
 
@@ -100,10 +189,9 @@ export default function Home() {
           </CardContent>
         </Card>
 
-
         <Card
           className="
-           bg-zinc-900/60 
+          bg-zinc-900/60
           backdrop-blur
           border
           border-zinc-800
@@ -127,7 +215,6 @@ export default function Home() {
 
           </CardContent>
         </Card>
-
 
         <Card
           className="
